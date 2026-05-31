@@ -394,14 +394,11 @@ jobs:
             echo "CONFIG_TCP_CONG_NV=y" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_TCP_CONG_WESTWOOD=y" >> ./common/arch/arm64/configs/gki_defconfig
             echo "CONFIG_TCP_CONG_HTCP=y" >> ./common/arch/arm64/configs/gki_defconfig
-            cd common
-            git clone --depth=1 https://github.com/cctv18/tcp-brutal.git
-            cp -r ./tcp-brutal/src/* ./net/ipv4/
-            echo "obj-$(CONFIG_TCP_CONG_BRUTAL) += tcp_brutal.o" >> ./net/ipv4/Makefile
-            echo "CONFIG_TCP_CONG_BRUTAL=y" >> ./arch/arm64/configs/gki_defconfig
-            rm -rf tcp-brutal
+            echo "CONFIG_TCP_CONG_BRUTAL=y" >> ./common/arch/arm64/configs/gki_defconfig
             if [[ "${{ github.event.inputs.bbr_enable }}" == "default" ]]; then
-              echo "CONFIG_DEFAULT_TCP_CONG=\"bbr\"" >> ./arch/arm64/configs/gki_defconfig
+              echo "CONFIG_DEFAULT_TCP_CONG=bbr" >> ./common/arch/arm64/configs/gki_defconfig
+            else
+              echo "CONFIG_DEFAULT_TCP_CONG=cubic" >> ./common/arch/arm64/configs/gki_defconfig
             fi
           fi
 
