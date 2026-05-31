@@ -445,17 +445,7 @@ jobs:
           cd kernel_workspace/common
           echo "正在添加ADIOS IO调度器..."
           git clone --depth=1 https://github.com/firelzrd/adios.git
-          cp ./adios/adios.c ./block/
-          echo "obj-\$(CONFIG_MQ_IOSCHED_ADIOS) += adios.o" >> ./block/Makefile
-          cat >> ./block/Kconfig.iosched <<'EOF'
-
-          config MQ_IOSCHED_ADIOS
-            tristate "ADIOS I/O scheduler"
-            default y
-            help
-              ADIOS (Autonomous, Deadline-Intelligent, Optimized Scheduler) aims to
-              provide low latency I/O scheduling.
-          EOF
+          patch -p1 -F 3 < ./adios/patches/stable/0001-linux6.12.44-ADIOS-3.2.0.patch || true
           echo "CONFIG_MQ_IOSCHED_ADIOS=y" >> ./arch/arm64/configs/gki_defconfig
           rm -rf adios
 
