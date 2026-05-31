@@ -278,6 +278,10 @@ jobs:
           cp ./susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
           cd ./common
           patch -p1 < 50_add_susfs_in_gki-android16-6.12.patch || true
+          # 确保 fs/exec.c 包含 susfs 头文件（补丁在新版源码上可能部分失败）
+          if grep -q "susfs_is_current_proc_umounted" fs/exec.c && ! grep -q "linux/susfs.h" fs/exec.c; then
+            sed -i '/#include <linux\/binfmts.h>/a #include <linux/susfs.h>' fs/exec.c
+          fi
           cd ..
           if [[ "${{ github.event.inputs.ksu_type }}" == "ksu" ]]; then
             cp ./susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/ 2>/dev/null || true
