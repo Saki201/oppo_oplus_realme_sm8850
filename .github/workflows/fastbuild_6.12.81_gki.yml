@@ -452,11 +452,10 @@ jobs:
       - name: 启用Re-Kernel
         if: inputs.rekernel_enable
         run: |
-          cd kernel_workspace/common
           echo "正在添加Re-Kernel支持..."
-          curl -sSL https://github.com/cctv18/ReKernel/raw/main/setup.sh | bash
-          echo "CONFIG_REKERNEL=y" >> ./arch/arm64/configs/gki_defconfig
-          echo "CONFIG_REKERNEL_NETWORK=y" >> ./arch/arm64/configs/gki_defconfig
+          cd kernel_workspace
+          echo "CONFIG_REKERNEL=y" >> ./common/arch/arm64/configs/gki_defconfig
+          echo "CONFIG_REKERNEL_NETWORK=y" >> ./common/arch/arm64/configs/gki_defconfig
 
       - name: 启用内核级基带保护
         if: inputs.baseband_guard
