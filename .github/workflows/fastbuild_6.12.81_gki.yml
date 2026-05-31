@@ -272,16 +272,18 @@ jobs:
         if: inputs.susfs_enable
         run: |
           cd kernel_workspace
-          git clone --depth=1 https://github.com/cctv18/susfs4oki.git susfs4ksu -b oki-android16-6.12
+          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git susfs4ksu -b gki-android16-6.12
           cp ./susfs4ksu/kernel_patches/50_add_susfs_in_gki-android16-6.12.patch ./common/
           cp ./susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ./susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
           cd ./common
-          patch -p1 < 50_add_susfs_in_gki-android16-6.12.patch || true
-          # 确保 fs/exec.c 包含 susfs 头文件（补丁在新版源码上可能部分失败）
-          if grep -q "susfs_is_current_proc_umounted" fs/exec.c && ! grep -q "linux/susfs.h" fs/exec.c; then
-            sed -i '/#include <linux\/binfmts.h>/a #include <linux/susfs.h>' fs/exec.c
-          fi
+          patch -p1 -F 3 < 50_add_susfs_in_gki-android16-6.12.patch || true
+          # 确保所有引用 susfs 函数的文件都包含头文件（补丁在新版源码上可能部分失败）
+          for f in fs/exec.c fs/namei.c fs/namespace.c fs/open.c fs/proc_namespace.c fs/readdir.c fs/statfs.c; do
+            if [ -f "$f" ] && grep -q "susfs_" "$f" && ! grep -q "susfs_def.h" "$f"; then
+              sed -i '1,30s/#include <linux\/fs.h>/#include <linux\/fs.h>\n#include <linux\/susfs_def.h>/' "$f"
+            fi
+          done
           cd ..
           if [[ "${{ github.event.inputs.ksu_type }}" == "ksu" ]]; then
             cp ./susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/ 2>/dev/null || true
