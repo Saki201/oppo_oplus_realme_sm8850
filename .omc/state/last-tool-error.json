@@ -1,0 +1,7 @@
+{
+  "tool_name": "mcp__exa__web_fetch_exa",
+  "tool_input_preview": "{\"maxCharacters\":2000,\"urls\":[\"https://gitlab.com/simonpunk/susfs4ksu/-/tree/gki-android16-6.12/kernel_patches?format=json\"]}",
+  "error": "Error fetching URL(s): https://gitlab.com/simonpunk/susfs4ksu/-/tree/gki-android16-6.12/kernel_patches?format=json: CRAWL_NOT_FOUND",
+  "timestamp": "2026-05-31T07:01:55.237Z",
+  "retry_count": 1
+}

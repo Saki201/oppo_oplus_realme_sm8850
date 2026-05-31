@@ -1,12 +1,12 @@
-name: (米/欧加真通用) 6.12.81 GKI内核快速构建
+name: (米/欧加真通用) 6.12.69 GKI内核快速构建
 
 env:
   TZ: Asia/Shanghai
   ANDROID_VERSION: 'android16'
   KERNEL_VERSION: '6.12'
-  SUB_VERSION: '81_gki'
+  SUB_VERSION: '69_gki'
   KERNEL_NAME: 'android16-6-g88da598dfe95-4k'
-  CCACHE_KEY: ccache-ecsv3-gki-6.12.81
+  CCACHE_KEY: ccache-ecsv3-gki-6.12.69
 
 on:
   workflow_dispatch:
@@ -131,8 +131,8 @@ jobs:
           sudo chmod +x /usr/bin/ccache &&
           rm -f ./ccache &
 
-          echo "正在克隆AOSP GKI主分支源码(android16-6.12, SUBLEVEL=81)..."
-          git clone --depth=1 https://android.googlesource.com/kernel/common -b android16-6.12 common &
+          echo "正在克隆AOSP GKI源码(android16-6.12-2026-03, SUBLEVEL=69)..."
+          git clone --depth=1 https://android.googlesource.com/kernel/common -b android16-6.12-2026-03 common &
 
           echo "正在克隆llvm-clang19工具链..." &&
           mkdir -p clang19 &&
@@ -617,7 +617,7 @@ jobs:
             wget https://github.com/cctv18/KPatch-Next/releases/latest/download/kpn.zip
           fi
 
-          ZIP_NAME="AnyKernel3_GKI-6.12.81_${KSU_TYPENAME}"
+          ZIP_NAME="AnyKernel3_GKI-6.12.69_${KSU_TYPENAME}"
           if [[ "${{ github.event.inputs.susfs_enable }}" == "true" ]]; then
             ZIP_NAME="${ZIP_NAME}_susfs"
           fi
@@ -678,13 +678,13 @@ jobs:
 
       - name: 获取内核完整版本号
         run: |
-          FULL_VERSION="${{ env.KERNEL_VERSION }}.81"
+          FULL_VERSION="${{ env.KERNEL_VERSION }}.69"
           echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_ENV
           TIME="$(TZ='Asia/Shanghai' date +'%y%m%d%H%M%S')"
           TIME_FORM="$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')"
           echo "TIME=$TIME" >> $GITHUB_ENV
           echo "TIME_FORM=$TIME_FORM" >> $GITHUB_ENV
-          TAG_HEAD="GKI-6.12.81-build"
+          TAG_HEAD="GKI-6.12.69-build"
           echo "TAG_HEAD=$TAG_HEAD" >> $GITHUB_ENV
           if [[ ${{ github.event.inputs.ksu_type }} == "sukisu" ]]; then
             KSU_TYPENAME="SukiSU Ultra"
@@ -705,10 +705,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cat << 'EOF' > release_notes.md
-          ### 📱 GKI 6.12.81 通用内核 | 构建信息
+          ### 📱 GKI 6.12.69 通用内核 | 构建信息
           - 内核版本号: ${{ env.FULL_VERSION }}
           - 编译时间: ${{ env.TIME_FORM }}
-          - 源码: AOSP 官方 android16-6.12 主分支 (SUBLEVEL=81)
+          - 源码: AOSP 官方 android16-6.12-2026-03 分支 (SUBLEVEL=69)
           - KSU分支：${{ env.KSU_TYPENAME }}
           - susfs支持：${{ github.event.inputs.susfs_enable }}
           - KPM支持 ：${{ github.event.inputs.kpm_enable }}
