@@ -277,6 +277,10 @@ jobs:
           cp ./susfs4ksu/kernel_patches/fs/* ./common/fs/
           cp ./susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
           cd ./common
+          # ReSukiSU 自带 selinux_hide，备份 selinuxfs.c 以便恢复
+          if [[ "${{ github.event.inputs.ksu_type }}" == "resukisu" ]]; then
+            cp security/selinux/selinuxfs.c security/selinux/selinuxfs.c.bak
+          fi
           patch -p1 -F 3 < 50_add_susfs_in_gki-android16-6.12.patch || true
           # 确保所有引用 susfs 函数的文件都包含头文件（补丁在新版源码上可能部分失败）
           for f in fs/exec.c fs/namei.c fs/namespace.c fs/open.c fs/proc_namespace.c fs/readdir.c fs/statfs.c; do
@@ -284,6 +288,12 @@ jobs:
               sed -i '1,30s/#include <linux\/fs.h>/#include <linux\/fs.h>\n#include <linux\/susfs_def.h>/' "$f"
             fi
           done
+          # ReSukiSU 自带 selinux_hide，恢复 selinuxfs.c 避免未定义符号
+          if [[ "${{ github.event.inputs.ksu_type }}" == "resukisu" ]]; then
+            cp security/selinux/selinuxfs.c.bak security/selinux/selinuxfs.c
+            rm -f security/selinux/selinuxfs.c.bak
+            echo "已恢复 selinuxfs.c（ReSukiSU 自带 selinux_hide）"
+          fi
           cd ..
           if [[ "${{ github.event.inputs.ksu_type }}" == "ksu" ]]; then
             cp ./susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/ 2>/dev/null || true
